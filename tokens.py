@@ -32,7 +32,7 @@ class OpenParen(Operator):
     def __init__(self) -> None:
         super().__init__("Open", '(')
 
-class closeParen(Operator):
+class CloseParen(Operator):
     def __init__(self) -> None:
         super().__init__("Close", ')')
 
