@@ -1,2 +1,1 @@
 # Omega-Calculator
-# Omega-Calculator
