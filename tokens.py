@@ -5,7 +5,7 @@ class Token:
         self.value = value
 
     def __str__(self) -> str:
-        return f"{self.type}, {self.value}"
+        return f"<{self.type}, {self.value}>"
 
     def evaluate(self) -> float:
         pass
@@ -19,8 +19,8 @@ class Number(Token):
 
 
 class Space(Token):
-    def __init__(self) -> None:
-        super().__init__("Space", " ")
+    def __init__(self, value=' ') -> None:
+        super().__init__("Space", value)
 
 
 class Operator(Token):
@@ -38,20 +38,20 @@ class CloseParen(Operator):
 
 
 class UnaryOperator(Operator):
-    def __init__(self, value:str, operand:Token) -> None:
+    def __init__(self, value:str, operand:Token = None) -> None:
         super().__init__(value)
         self.operand = operand
 
 
 class BinaryOperator(Operator):
-    def __init__(self, value:str, left:Token, right:Token) -> None:
-        super().__init__(self)
+    def __init__(self, value:str, left:Token = None, right:Token = None) -> None:
+        super().__init__(value)
         self.left = left
         self.right = right
 
         
 class Factorial(UnaryOperator):
-    def __init__(self, value: str, operand: Token) -> None:
+    def __init__(self, value: str, operand: Token = None) -> None:
         super().__init__(value, operand)
 
     def evaluate(self) -> float:
@@ -63,7 +63,7 @@ class Factorial(UnaryOperator):
 
 
 class Tilda(UnaryOperator):
-    def __init__(self, value: str, operand: Token) -> None:
+    def __init__(self, value: str, operand: Token = None) -> None:
         super().__init__(value, operand)
 
     def evaluate(self) -> float:
@@ -71,7 +71,7 @@ class Tilda(UnaryOperator):
 
 
 class Negative(UnaryOperator):
-    def __init__(self, value: str, operand: Token) -> None:
+    def __init__(self, value: str, operand: Token = None) -> None:
         super().__init__(value, operand)
 
     def evaluate(self) -> float:
@@ -79,7 +79,7 @@ class Negative(UnaryOperator):
 
 
 class Plus(BinaryOperator):
-    def __init__(self, value: str, left: Token, right: Token) -> None:
+    def __init__(self, value: str, left: Token = None, right: Token = None) -> None:
         super().__init__(value, left, right)
 
     def evaluate(self) -> float:
@@ -87,7 +87,7 @@ class Plus(BinaryOperator):
 
 
 class Minus(BinaryOperator):
-    def __init__(self, value: str, left: Token, right: Token) -> None:
+    def __init__(self, value: str, left: Token = None, right: Token = None) -> None:
         super().__init__(value, left, right)
 
     def evaluate(self) -> float:
@@ -95,7 +95,7 @@ class Minus(BinaryOperator):
 
 
 class Mult(BinaryOperator):
-    def __init__(self, value: str, left: Token, right: Token) -> None:
+    def __init__(self, value: str, left: Token = None, right: Token = None) -> None:
         super().__init__(value, left, right)
 
     def evaluate(self) -> float:
@@ -103,7 +103,7 @@ class Mult(BinaryOperator):
 
 
 class Div(BinaryOperator):
-    def __init__(self, value: str, left: Token, right: Token) -> None:
+    def __init__(self, value: str, left: Token = None, right: Token = None) -> None:
         super().__init__(value, left, right)
 
     def evaluate(self) -> float:
