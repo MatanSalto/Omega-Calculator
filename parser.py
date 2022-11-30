@@ -7,7 +7,8 @@
   ADD -> MUL{+|- MUL} // Addition expression can consist other addition expressions
   MUL -> POW{*|\ POW} // Multiplication expression can consist other multiplication expressions
   POW -> MOD{^MOD} // Power expression can consist other power expressions
-  MOD -> MAX{$|&|@|TILDA} 
+  MOD -> MAX{$|&|@|MAX}
+  MAX -> ~TILDA 
   TILDA -> ~TILDA | FINAL!
   FINAL -> number | (E) | -FINAL
 """
@@ -49,7 +50,7 @@ def parse_add(tokens: TokenStream):
 
 
 def parse_mul(tokens: TokenStream):
-    a = parse_final(tokens)
+    a = parse_pow(tokens)
 
     while True:
         # Ignore spaces
@@ -59,17 +60,75 @@ def parse_mul(tokens: TokenStream):
             
         elif tokens.has_next() and isinstance(tokens.peek(), Mult):
             tokens.next()
-            b = parse_final(tokens)
+            b = parse_pow(tokens)
             a = Mult("*", a, b)
         
         elif tokens.has_next() and isinstance(tokens.peek(), Div):
             tokens.next()
-            b = parse_final(tokens)
+            b = parse_pow(tokens)
             a = Div("/", a, b)
         else:
             return a
 
 
+def parse_pow(tokens: TokenStream):
+
+    a = parse_mod(tokens)
+    while True:
+        # Ignore spaces
+        if tokens.has_next() and isinstance(tokens.peek(), Space):
+            tokens.next()
+            continue   
+        elif tokens.has_next() and isinstance(tokens.peek(), Power):
+            tokens.next()
+            b = parse_mod(tokens)
+            a = Power("%", a, b)
+        else:
+            return a
+
+
+def parse_mod(tokens: TokenStream):
+    
+    a = parse_max(tokens)
+    while True:
+        # Ignore spaces
+        if tokens.has_next() and isinstance(tokens.peek(), Space):
+            tokens.next()
+            continue   
+        elif tokens.has_next() and isinstance(tokens.peek(), Mod):
+            tokens.next()
+            b = parse_max(tokens)
+            a = Mod("^", a, b)
+        else:
+            return a
+
+
+def parse_max(tokens: TokenStream):
+    a = parse_final(tokens)
+    while True:
+        # Ignore spaces
+        if tokens.has_next() and isinstance(tokens.peek(), Space):
+            tokens.next()
+            continue   
+
+        elif tokens.has_next() and isinstance(tokens.peek(), Min):
+            tokens.next()
+            b = parse_final(tokens)
+            a = Min("&", a, b)
+
+        elif tokens.has_next() and isinstance(tokens.peek(), Max):
+            tokens.next()
+            b = parse_final(tokens)
+            a = Max("$", a, b)
+
+        elif tokens.has_next() and isinstance(tokens.peek(), Avg):
+            tokens.next()
+            b = parse_final(tokens)
+            a = Avg("@", a, b)
+
+        else:
+            return a
+    
 def parse_final(tokens: TokenStream):
 
     if tokens.has_next() and isinstance(tokens.peek(), Number):
@@ -96,7 +155,7 @@ def print_tree(node):
 
 if __name__ == "__main__":
 
-    tokens = TokenStream([Number(10), Space(), Plus('+'), Minus("-"),Number(2), Mult("*"), Number(2), Div("/"), Number(2)])
+    tokens = TokenStream([Number(10), Avg('@'), Number(4), Mult('*'), Number(3), Minus('-'), Minus('-'), Number(5)])
     
     node = parseE(tokens)
     
