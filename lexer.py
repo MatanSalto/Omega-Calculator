@@ -1,13 +1,7 @@
 from tokens import *
 
-OPERATORS = {
-    '+': Plus,
-    '-': Minus,
-    '*': Mult,
-    '/': Div,
-    ' ': Space
-}
 
+OPERATORS = ['+', '-', '*', '/', '^', '%', '$', '&', '@', '~', '!', '(', ')', ' ']
 
 
 def lex_input_string(string: str) -> list[Token]:
@@ -20,9 +14,9 @@ def lex_input_string(string: str) -> list[Token]:
 
     # Loop through the characters in the string
     while string[index] != '\0':
-        # If the character is an operator, create the right token and append it to the list
-        if string[index] in OPERATORS.keys():
-            tokens.append(OPERATORS[string[index]](string[index]))
+        # If the character is an operator, append it to the token list as a character
+        if string[index] in OPERATORS:
+            tokens.append(string[index])
             index += 1
         
         # Else, if the character is a digit, continute reading the digits until reaching a non-digit character
@@ -63,6 +57,15 @@ def lex_input_string(string: str) -> list[Token]:
     return tokens
 
 
+
+if __name__ == "__main__":
+
+    string = "3 + 5 - 12.3/20\0"
+
+    tokens = lex_input_string(string)
+
+    for token in tokens:
+        print(token)
 
 
             
