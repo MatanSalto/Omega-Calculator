@@ -2,6 +2,7 @@ from tokens import *
 
 
 OPERATORS = ['+', '-', '*', '/', '^', '%', '$', '&', '@', '~', '!', '(', ')', ' ']
+# Include space in valid operators even though it is not an operator
 
 
 class TokenStream:
@@ -78,7 +79,7 @@ def lex_input_string(string: str) -> list[Token]:
             print(f"Non valid symbol at index {index}")
             return
 
-    return tokens
+    return TokenStream(tokens[::-1])
 
 
 
