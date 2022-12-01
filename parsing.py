@@ -206,6 +206,14 @@ def parse_final(tokens: TokenStream):
         a = parse_final(tokens)
         return Negative('-', a)
 
+    elif tokens.has_next() and tokens.peek() == '(':
+        tokens.next()
+        a = parseE(tokens)
+        if tokens.has_next() and tokens.peek() == ')':
+            tokens.next()
+            return a
+        print("Expected )")
+
 
 
 
@@ -219,7 +227,7 @@ class Parser:
 
 if __name__ == "__main__":
 
-    string = "5$2 &  1\0"
+    string = "-5&2\0"
     lexer = Lexer() 
     tokens = lexer.lex_input_string(string)
     parser = Parser(tokens)
