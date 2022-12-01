@@ -4,6 +4,30 @@ from tokens import *
 OPERATORS = ['+', '-', '*', '/', '^', '%', '$', '&', '@', '~', '!', '(', ')', ' ']
 
 
+class TokenStream:
+
+    def __init__(self, tokens:list[Token]) -> None:
+        self.tokens = tokens
+        self.i = 0
+
+    def next(self) -> Token:
+        if self.has_next():
+            token = self.tokens[self.i]
+            self.i += 1
+            return token
+
+    def peek(self) -> Token:
+        if self.has_next():
+            return self.tokens[self.i]
+
+    def has_next(self) -> bool:
+        if self.i < len(self.tokens):
+            return True
+
+        return False
+
+
+
 def lex_input_string(string: str) -> list[Token]:
 
     # Initialize the list of tokens
@@ -60,7 +84,7 @@ def lex_input_string(string: str) -> list[Token]:
 
 if __name__ == "__main__":
 
-    string = "3 + 5 - 12.3/20\0"
+    string = "3 + s5 - 12.3/20\0"
 
     tokens = lex_input_string(string)
 
