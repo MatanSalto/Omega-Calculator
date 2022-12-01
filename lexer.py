@@ -81,18 +81,3 @@ class Lexer:
                 return
 
         return TokenStream(tokens)
-
-
-
-if __name__ == "__main__":
-
-    string = "3 + 5 - 12.3/20\0"
-
-    tokens = lex_input_string(string)
-
-    for token in tokens:
-        print(token)
-
-
-            
-
