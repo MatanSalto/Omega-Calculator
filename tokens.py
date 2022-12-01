@@ -41,7 +41,7 @@ class Factorial(UnaryOperator):
         super().__init__(value, operand)
 
     def evaluate(self) -> float:
-        return self._factorial(self.oparand.evaluate())
+        return self._factorial(self.operand.evaluate())
 
     def _factorial(self, n:int) -> int:
         if n == 0: return 1
