@@ -18,23 +18,9 @@ class Number(Token):
         return self.value
 
 
-class Space(Token):
-    def __init__(self, value=' ') -> None:
-        super().__init__("Space", value)
-
-
 class Operator(Token):
     def __init__(self, value) -> None:
         super().__init__("Operator", value)
-
-
-class OpenParen(Operator):
-    def __init__(self) -> None:
-        super().__init__("Open", '(')
-
-class CloseParen(Operator):
-    def __init__(self) -> None:
-        super().__init__("Close", ')')
 
 
 class UnaryOperator(Operator):
@@ -133,7 +119,7 @@ class Max(BinaryOperator):
     def evaluate(self) -> float:
         
         a = self.left.evaluate()
-        b = self.left.evaluate()
+        b = self.right.evaluate()
 
         return a if a > b else b
 
