@@ -108,3 +108,53 @@ class Div(BinaryOperator):
 
     def evaluate(self) -> float:
         return self.left.evaluate() / self.right.evaluate()
+
+
+class Power(BinaryOperator):
+    def __init__(self, value: str, left: Token = None, right: Token = None) -> None:
+        super().__init__(value, left, right)
+
+    def evaluate(self) -> float:
+        return self.left.evaluate() ** self.right.evaluate()
+
+
+class Mod(BinaryOperator):
+    def __init__(self, value: str, left: Token = None, right: Token = None) -> None:
+        super().__init__(value, left, right)
+
+    def evaluate(self) -> float:
+        return self.left.evaluate() % self.right.evaluate()
+
+
+class Max(BinaryOperator):
+    def __init__(self, value: str, left: Token = None, right: Token = None) -> None:
+        super().__init__(value, left, right)
+
+    def evaluate(self) -> float:
+        
+        a = self.left.evaluate()
+        b = self.left.evaluate()
+
+        return a if a > b else b
+
+
+class Min(BinaryOperator):
+    def __init__(self, value: str, left: Token = None, right: Token = None) -> None:
+        super().__init__(value, left, right)
+
+    def evaluate(self) -> float:
+        
+        a = self.left.evaluate()
+        b = self.right.evaluate()
+
+        return a if a < b else b
+
+
+class Avg(BinaryOperator):
+    def __init__(self, value: str, left: Token = None, right: Token = None) -> None:
+        super().__init__(value, left, right)
+
+    def evaluate(self) -> float:        
+        return (self.left.evaluate() + self.right.evaluate()) / 2
+
+
