@@ -183,7 +183,7 @@ def parse_tilda(tokens: TokenStream):
 
     if tokens.has_next() and tokens.peek() == '~':
         tokens.next()
-        a = parse_tilda(tokens)
+        a = parse_final(tokens)
         return Tilda('~', a)
 
     else:
@@ -227,7 +227,7 @@ class Parser:
 
 if __name__ == "__main__":
 
-    string = "-5&2\0"
+    string = "3! !\0"
     lexer = Lexer() 
     tokens = lexer.lex_input_string(string)
     parser = Parser(tokens)
