@@ -4,14 +4,16 @@
   The grammar is defined as the following:
 
   E -> ADD 
-  ADD -> k{+|- k} // Addition expression can consist other addition expressions
-  k -> MUL | -k
-  MUL -> POW{*|\ POW} // Multiplication expression can consist other multiplication expressions
-  POW -> MOD{^MOD} // Power expression can consist other power expressions
+  ADD -> MUL{+|- MUL}
+  MUL -> POW{*|\ POW}
+  POW -> MOD{^MOD}
   MOD -> MAX{$|&|@|MAX}
-  MAX -> ~TILDA 
-  TILDA -> ~TILDA | FINAL!
-  FINAL -> number | (E) | -FINAL
+  MAX -> FACT
+  FACT -> FACT! | TILDA
+  TILDA -> ~TILDA | NEG
+  NEG -> -NEG | COUNT
+  COUNT -> COUNT# | FINAL
+  FINAL -> -FINAL | number | (E) |
 """
 
 from lexer import TokenStream, Lexer
@@ -19,30 +21,26 @@ from tokens import *
 
 
 # Function to parse the initial expression
-def parseE(tokens: TokenStream):
-    return parse_add(tokens)
+def parse_expression(tokens: TokenStream):
+    return parse_addition_subtraction_expression(tokens)
 
 # Function to parse an addition or subtraction expression
-def parse_add(tokens: TokenStream):
+def parse_addition_subtraction_expression(tokens: TokenStream):
     # Parse the left part of the expression using the production 
-    a = parse_k(tokens)
+    a = parse_multiplication_division_expression(tokens)
 
     while True:
-        # Ignore spaces
-        if tokens.has_next() and tokens.peek() == ' ':
-            tokens.next()
-            continue
             
         # If the next token is a plus, parse the rest of the expression
-        elif tokens.has_next() and tokens.peek() == '+':
+        if tokens.has_next() and tokens.peek() == '+':
             tokens.next()
-            b = parse_k(tokens)
+            b = parse_multiplication_division_expression(tokens)
             a = Plus("+", a, b)
         
         # If the next token is a minus, parse the rest of the expression
         elif tokens.has_next() and tokens.peek() == '-':
             tokens.next()
-            b = parse_k(tokens)
+            b = parse_multiplication_division_expression(tokens)
             a = Minus("-", a, b)
 
         # Else, there is no production to make, so return the token itself
@@ -50,36 +48,21 @@ def parse_add(tokens: TokenStream):
             return a
 
 
-def parse_k(tokens: TokenStream):
-
-    while tokens.has_next() and tokens.peek() == ' ':
-        tokens.next()
-
-    if tokens.has_next() and tokens.peek() == '-':
-        tokens.next()
-        return Negative('-', parse_mul(tokens))
-
-    return parse_mul(tokens)
-
-def parse_mul(tokens: TokenStream):
-    a = parse_pow(tokens)
+def parse_multiplication_division_expression(tokens: TokenStream):
+    a = parse_power_expression(tokens)
 
     while True:
-        # Ignore spaces
-        if tokens.has_next() and tokens.peek() == ' ':
-            tokens.next()
-            continue
-        
+     
         # If the next token is a multplication, parse the rest of the expression
-        elif tokens.has_next() and tokens.peek() == '*':
+        if tokens.has_next() and tokens.peek() == '*':
             tokens.next()
-            b = parse_pow(tokens)
+            b = parse_power_expression(tokens)
             a = Mult("*", a, b)
         
         # If the next token is a division, parse the rest of the expression
         elif tokens.has_next() and tokens.peek() == '/':
             tokens.next()
-            b = parse_pow(tokens)
+            b = parse_power_expression(tokens)
             a = Div("/", a, b)
 
         # Else, there is not production to make, so return the token itself
@@ -87,19 +70,15 @@ def parse_mul(tokens: TokenStream):
             return a
 
 
-def parse_pow(tokens: TokenStream):
+def parse_power_expression(tokens: TokenStream):
 
-    a = parse_mod(tokens)
+    a = parse_mod_expression(tokens)
     while True:
-        # Ignore spaces
-        if tokens.has_next() and tokens.peek() == ' ':
-            tokens.next()
-            continue   
 
         # If the next token is a power, parse the rest of the expression
-        elif tokens.has_next() and tokens.peek() == '^':
+        if tokens.has_next() and tokens.peek() == '^':
             tokens.next()
-            b = parse_mod(tokens)
+            b = parse_mod_expression(tokens)
             a = Power("^", a, b)
 
         # Else, there is no production to make, so return the token itself
@@ -107,19 +86,15 @@ def parse_pow(tokens: TokenStream):
             return a
 
 
-def parse_mod(tokens: TokenStream):
+def parse_mod_expression(tokens: TokenStream):
     
-    a = parse_max(tokens)
+    a = parse_max_min_avg_expression(tokens)
     while True:
-        # Ignore spaces
-        if tokens.has_next() and tokens.peek() == ' ':
-            tokens.next()
-            continue   
 
         # If the next token is a mod, parse the rest of the expression
-        elif tokens.has_next() and tokens.peek() == '%':
+        if tokens.has_next() and tokens.peek() == '%':
             tokens.next()
-            b = parse_max(tokens)
+            b = parse_max_min_avg_expression(tokens)
             a = Mod("%", a, b)
 
         # Else, there is no production to make, so return the token itself
@@ -127,30 +102,26 @@ def parse_mod(tokens: TokenStream):
             return a
 
 
-def parse_max(tokens: TokenStream):
-    a = parse_factorial(tokens)
-    while True:
-        # Ignore spaces
-        if tokens.has_next() and tokens.peek() == ' ':
-            tokens.next()
-            continue   
+def parse_max_min_avg_expression(tokens: TokenStream):
+    a = parse_factorial_expression(tokens)
+    while True:  
 
         # If the next token is a min, parse the rest of the expression
-        elif tokens.has_next() and tokens.peek() == '&':
+        if tokens.has_next() and tokens.peek() == '&':
             tokens.next()
-            b = parse_factorial(tokens)
+            b = parse_factorial_expression(tokens)
             a = Min("&", a, b)
 
         # If the next token is a max, parse the rest of the expression
         elif tokens.has_next() and tokens.peek() ==  '$':
             tokens.next()
-            b = parse_factorial(tokens)
+            b = parse_factorial_expression(tokens)
             a = Max("$", a, b)
 
         # If the next token is an avg, parse the rest of the expression
         elif tokens.has_next() and tokens.peek() == '@':
             tokens.next()
-            b = parse_factorial(tokens)
+            b = parse_factorial_expression(tokens)
             a = Avg("@", a, b)
 
         # Else, there is no production to make, so return the token itself
@@ -158,17 +129,13 @@ def parse_max(tokens: TokenStream):
             return a
 
 
-def parse_factorial(tokens: TokenStream):
+def parse_factorial_expression(tokens: TokenStream):
 
-    a = parse_tilda(tokens)
+    a = parse_tilda_expression(tokens)
 
     while True:
 
-        if tokens.has_next() and tokens.peek() == ' ':
-            tokens.next()
-            continue
-
-        elif tokens.has_next() and tokens.peek() == '!':
+        if tokens.has_next() and tokens.peek() == '!':
             tokens.next()
             a = Factorial('!',a)
         
@@ -176,25 +143,40 @@ def parse_factorial(tokens: TokenStream):
             return a
     
 
-def parse_tilda(tokens: TokenStream):
+def parse_tilda_expression(tokens: TokenStream):
 
-    while tokens.has_next() and tokens.peek() == ' ':
-        tokens.next()
 
     if tokens.has_next() and tokens.peek() == '~':
         tokens.next()
-        a = parse_final(tokens)
+        a = parse_negative_expression(tokens)
         return Tilda('~', a)
 
     else:
-        return parse_final(tokens)
+        return parse_negative_expression(tokens)
 
 
-def parse_final(tokens: TokenStream):
-
-    # Ignore spaces
-    while tokens.has_next() and tokens.peek() == ' ':
+def parse_negative_expression(tokens: TokenStream):
+    
+    if tokens.has_next() and tokens.peek() == '-':
         tokens.next()
+        a = parse_count_digits_expression(tokens)
+        return Negative('-', a)
+
+    else:
+        return parse_count_digits_expression(tokens)
+
+def parse_count_digits_expression(tokens: TokenStream):
+    a = parse_final_expression(tokens)
+
+    while True:
+        if tokens.has_next() and tokens.peek() == '#':
+            tokens.next()
+            a = SumDigits('#',a)
+        
+        else:
+            return a
+
+def parse_final_expression(tokens: TokenStream):
 
     # If the next token is a number, pop it and return it
     if tokens.has_next() and isinstance(tokens.peek(), Number):
@@ -203,15 +185,15 @@ def parse_final(tokens: TokenStream):
 
     elif tokens.has_next() and tokens.peek() == '-':
         tokens.next()
-        a = parse_final(tokens)
+        a = parse_final_expression(tokens)
         return Negative('-', a)
 
     elif tokens.has_next() and tokens.peek() == '(':
         tokens.next()
-        a = parseE(tokens)
+        a = parse_expression(tokens)
         if tokens.has_next() and tokens.peek() == ')':
             tokens.next()
-            return a
+            # return a
         print("Expected )")
 
 
@@ -223,11 +205,11 @@ class Parser:
         self.token_stream = token_stream
 
     def parse(self) -> Token:
-        return parseE(tokens)
+        return parse_expression(tokens)
 
 if __name__ == "__main__":
 
-    string = "3! !\0"
+    string = "2+ 4 * 5\0"
     lexer = Lexer() 
     tokens = lexer.lex_input_string(string)
     parser = Parser(tokens)
