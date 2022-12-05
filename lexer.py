@@ -1,7 +1,7 @@
 from tokens import *
 
 
-OPERATORS = ['+', '-', '*', '/', '^', '%', '$', '&', '@', '~', '!', '(', ')', ' ']
+OPERATORS = ['+', '-', '*', '/', '^', '%', '$', '&', '@', '~', '!', '#', '(', ')']
 # Include space in valid operators even though it is not an operator
 
 
