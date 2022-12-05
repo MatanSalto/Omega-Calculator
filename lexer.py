@@ -32,7 +32,8 @@ class Lexer:
 
     def lex_input_string(self, string: str) -> list[Token]:
         # Remove the spaces from the string
-        string.replace(' ', '')
+        string = string.replace(' ', '')
+
         
         # Initialize the list of tokens
         tokens = []
