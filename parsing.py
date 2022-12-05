@@ -134,7 +134,6 @@ def parse_factorial_expression(tokens: TokenStream):
     a = parse_tilda_expression(tokens)
 
     while True:
-
         if tokens.has_next() and tokens.peek() == '!':
             tokens.next()
             a = Factorial('!',a)
@@ -144,7 +143,6 @@ def parse_factorial_expression(tokens: TokenStream):
     
 
 def parse_tilda_expression(tokens: TokenStream):
-
 
     if tokens.has_next() and tokens.peek() == '~':
         tokens.next()
@@ -193,7 +191,7 @@ def parse_final_expression(tokens: TokenStream):
         a = parse_expression(tokens)
         if tokens.has_next() and tokens.peek() == ')':
             tokens.next()
-            # return a
+            return a
         print("Expected )")
 
 
@@ -209,7 +207,7 @@ class Parser:
 
 if __name__ == "__main__":
 
-    string = "2+ 4 * 5\0"
+    string = "(2+1)!!\0"
     lexer = Lexer() 
     tokens = lexer.lex_input_string(string)
     parser = Parser(tokens)
