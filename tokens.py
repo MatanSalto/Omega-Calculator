@@ -64,6 +64,20 @@ class Negative(UnaryOperator):
         return -1 * self.operand.evaluate()
 
 
+class SumDigits(UnaryOperator):
+    def __init__(self, value: str, operand: Token = None) -> None:
+        super().__init__(value, operand)
+
+    def evaluate(self) -> float:
+        return self._count_digits(self.operand.evaluate())
+
+    def _count_digits(self, num):
+        sum = 0
+        for digit in str(num):
+            sum += int(digit)
+
+        return sum
+
 class Plus(BinaryOperator):
     def __init__(self, value: str, left: Token = None, right: Token = None) -> None:
         super().__init__(value, left, right)
@@ -142,5 +156,6 @@ class Avg(BinaryOperator):
 
     def evaluate(self) -> float:        
         return (self.left.evaluate() + self.right.evaluate()) / 2
+
 
 
