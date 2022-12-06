@@ -1,12 +1,10 @@
 from tokens import *
 
-
 OPERATORS = ['+', '-', '*', '/', '^', '%', '$', '&', '@', '~', '!', '#', '(', ')']
-# Include space in valid operators even though it is not an operator
 
 
 class TokenStream:
-
+    # This class represents a token stream - an iterator of tokens
     def __init__(self, tokens:list[Token]) -> None:
         self.tokens = tokens
         self.i = 0
@@ -29,10 +27,16 @@ class TokenStream:
 
 
 class Lexer:
-
+    # This class represents a Lexer object
     def lex_input_string(self, string: str) -> list[Token]:
-        # Remove the spaces from the string
-        string = string.replace(' ', '')
+        """
+        This method performs lexical analysis on the input string, and detects numbers and operators
+        Args:
+            string (str): _description_
+
+        Returns:
+            list[Token]: _description_
+        """
 
         
         # Initialize the list of tokens
@@ -43,6 +47,10 @@ class Lexer:
 
         # Loop through the characters in the string
         while string[index] != '\0':
+            # Ignore spaces
+            if (string[index] == ' '):
+                index += 1
+                continue
             # If the character is an operator, append it to the token list as a character
             if string[index] in OPERATORS:
                 tokens.append(string[index])
@@ -54,7 +62,12 @@ class Lexer:
                 digits_after_decimal_point = 0 # counter to indicate how many digits there are after the decimal place
 
                 # Append the digit to the number until the character is not a digit
-                while string[index].isdigit():
+                while string[index].isdigit() or string[index] == ' ':
+                    # Ignore spaces
+                    if string[index] == ' ':
+                        index += 1
+                        continue
+
                     number = number * 10 + int(string[index])
                     index += 1
 
@@ -62,7 +75,10 @@ class Lexer:
                 if string[index] == '.':
                     index += 1
             
-                    while string[index].isdigit():
+                    while string[index].isdigit() or string[index] == ' ':
+                        if string[index] == ' ':
+                            index += 1
+                            continue
                         # Append the digit to the number
                         number = number * 10 + int(string[index])
                         # Increment the counter 
