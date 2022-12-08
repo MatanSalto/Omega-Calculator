@@ -1,6 +1,20 @@
 from tokens import *
+from exceptions import *
 
-OPERATORS = ['+', '-', '*', '/', '^', '%', '$', '&', '@', '~', '!', '#', '(', ')']
+OPERATORS = {'+':Plus,
+             '-':Minus,
+             '*':Mult,
+             '/':Div,
+             '^':Power,
+             '%':Mod,
+             '$':Max,
+             '&':Min,
+             '@':Avg,
+             '~':Tilda,
+             '!':Factorial,
+             '#':SumDigits,
+             '(':OpenParen,
+             ')':CloseParen}
 
 
 class TokenStream:
@@ -38,11 +52,10 @@ class Lexer:
             list[Token]: _description_
         """
 
-        
         # Initialize the list of tokens
         tokens = []
         
-        # Initialize the string index
+        # Initialize the loop index
         index = 0
 
         # Loop through the characters in the string
@@ -51,9 +64,10 @@ class Lexer:
             if (string[index] == ' '):
                 index += 1
                 continue
+
             # If the character is an operator, append it to the token list as a character
-            if string[index] in OPERATORS:
-                tokens.append(string[index])
+            if string[index] in OPERATORS.keys():
+                tokens.append(OPERATORS[string[index]](index, string[index]))
                 index += 1
             
             # Else, if the character is a digit, continute reading the digits until reaching a non-digit character
@@ -88,15 +102,20 @@ class Lexer:
 
                     # At this point, if there are no digits after the decimal place, the number is not valid (it is a number like 2342.)
                     if digits_after_decimal_point == 0:
-                        print(f"Expected a digit at index {index}")
-                        return
-
+                        raise InvalidSymbolException(index-1, string)
                     # Else, calculate the number and add the corresponding token to the list
-                tokens.append(Number(number * (10 ** -digits_after_decimal_point)))
+                tokens.append(Number(index-1, number * (10 ** -digits_after_decimal_point)))
 
             # Else, the character is not valid
             else:
-                print(f"Non valid symbol at index {index}")
-                return
+                raise InvalidSymbolException(index, string)
 
         return TokenStream(tokens)
+
+if __name__ == "__main__":
+    string = "3 + 4 - 23\0"
+    lex = Lexer()
+    tokens = lex.lex_input_string(string)
+
+    for token in tokens.tokens:
+        print(token)
