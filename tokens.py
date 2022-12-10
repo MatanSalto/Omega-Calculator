@@ -1,4 +1,5 @@
-from exceptions import *
+from Exceptions.exceptions import *
+
 
 # Define the Token class
 class Token:
@@ -247,7 +248,7 @@ class Min(BinaryOperator):
 
 class Avg(BinaryOperator):
     def __init__(self, index:int, value: str, left: Token = None, right: Token = None) -> None:
-        super().__init__(index, index, value, left, right)
+        super().__init__(index, value, left, right)
 
     def evaluate(self) -> float:        
         return (self.left.evaluate() + self.right.evaluate()) / 2
