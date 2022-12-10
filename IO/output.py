@@ -1,3 +1,5 @@
+from Exceptions.exceptions import ParsingInterrupt
+
 class OutputPrinter:
     def __init__(self) -> None:
         pass
@@ -11,4 +13,16 @@ class ConsoleOutputPrinter(OutputPrinter):
         pass
 
     def output(self, string: str) -> None:
-        print(string)
+        try:
+            print(string)
+        # Catch IO errors
+        except IOError as ioe:
+            print(ioe.__cause__)
+            # Raise paring interrupt exception
+            raise ParsingInterrupt()
+
+        # Catch the rest of the exceptions:
+        except RuntimeError as rte:
+            print(rte.__cause__)
+            # Raise paring interrupt exception
+            raise ParsingInterrupt()
