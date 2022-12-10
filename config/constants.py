@@ -1,5 +1,6 @@
 from tokens import *
 
+
 # Valid operators
 OPERATORS = {
     '+':Plus,
@@ -16,3 +17,13 @@ OPERATORS = {
     '#':SumDigits,
     '(':OpenParen,
     ')':CloseParen}
+
+
+# Binary operators priorities
+PRIORITIES = {
+    1: [Plus, Minus],
+    2: [Mult, Div],
+    3: [Power],
+    4: [Mod],
+    5: [Max, Min, Avg],
+}
