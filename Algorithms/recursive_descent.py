@@ -1,8 +1,7 @@
-from Exceptions.exceptions import *
 from Algorithms.lexing import TokenStream
-from tokens import *
 from Config.constants import PRIORITIES
-
+from Exceptions.exceptions import *
+from tokens import *
 
 MAX_PRIORITY = 5  # The maximum priority for a binary operator
 
@@ -37,7 +36,7 @@ def parse_binary_expression(tokens: TokenStream, priority:int, string:str, in_pa
     
     # Base case: if we reached the max priority, try parsing the rest of the expression as a factorial expression
     if priority > MAX_PRIORITY:
-        return parse_factorial_expression(tokens, string, in_paren)
+        return parse_factorial_digitsSum_expression(tokens, string, in_paren)
 
     else:
         # Get the valid operators for the current priority
@@ -84,7 +83,7 @@ def parse_binary_expression(tokens: TokenStream, priority:int, string:str, in_pa
                 return a
 
 
-def parse_factorial_expression(tokens: TokenStream, string:str, in_paren=False) -> Token:
+def parse_factorial_digitsSum_expression(tokens: TokenStream, string:str, in_paren=False) -> Token:
     """
     This function parses a factorial expression
     Args:
@@ -103,6 +102,14 @@ def parse_factorial_expression(tokens: TokenStream, string:str, in_paren=False) 
         raise MissingOperandException(tokens.last_token().index, string)
 
     while True:
+        # If the next token is a SumDigits
+        if tokens.has_next() and type(tokens.peek()) == SumDigits:
+            # Get the sumDigits operator node
+            c = tokens.next()
+            # Set the left side as the sumDigits node
+            c.operand = a
+            # Set a to be the factorial node
+            a = c
         # If the next token is a factorial
         if tokens.has_next() and type(tokens.peek()) == Factorial:
             # Get the factorial operator node
@@ -112,7 +119,7 @@ def parse_factorial_expression(tokens: TokenStream, string:str, in_paren=False) 
             # Set a to be the factorial node 
             a = c
         
-        # Else, there is no more factorial operators in the expression
+        # Else, there is no more factorial or sumDigits operators in the expression
         else:
             # If the expression is not in parenthesis and we encountered a ')', raise an exception
             if not in_paren and type(tokens.peek()) == CloseParen:
@@ -189,45 +196,8 @@ def parse_negative_expression(tokens: TokenStream, string:str, in_paren=False):
             raise MissingParenthesisException()
 
         # Else, try parsing the rest of the expression
-        return parse_sum_digits_expression(tokens, string, in_paren)
+        return parse_final_expression(tokens, string)
 
-
-def parse_sum_digits_expression(tokens: TokenStream, string:str, in_paren=False) -> Token:
-    """
-    This function parses a sum-digits expression
-    Args:
-        tokens (TokenStream): the sequence of tokens
-        string (str): the original input sting (to report errors)
-        in_paren (bool, optional): is the current expression is in parenthasis. Defaults to False.
-
-    Returns:
-        Token: a token node representing the expression
-    """
-
-    # Parse the left side of the expression
-    a = parse_final_expression(tokens, string)
-
-    if not a:
-        raise MissingOperandException(tokens.last_token().index, string)
-
-    while True:
-        # If the next token is a sum-digits operator
-        if tokens.has_next() and type(tokens.peek()) == SumDigits:
-            # Get the SumDigits operator node
-            c = tokens.next()
-            # Set the left side as the operator's child
-            c.operand = a
-            # Set a to be the operator node
-            a = c
-        
-        # Else, there is no more SumDigits operators in the expression
-        else:
-            # If the expression is not in parenthesis and we encountered a ')', raise an exception
-            if not in_paren and type(tokens.peek()) == CloseParen:
-                raise MissingParenthesisException()
-
-            # Else, return the node itself
-            return a
 
 def parse_final_expression(tokens: TokenStream, string:str) -> Token:
     """
