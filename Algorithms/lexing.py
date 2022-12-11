@@ -19,11 +19,18 @@ class TokenStream:
         if self.has_next():
             return self.tokens[self.i]
 
+    def look_ahead(self) -> Token:
+        if self.has_double_next():
+            return self.tokens[self.i+1]
+
     def has_next(self) -> bool:
         if self.i < len(self.tokens):
             return True
 
         return False
+
+    def has_double_next(self) -> bool:
+        return self.i < len(self.tokens)-1
 
     def last_token(self) -> Token:
         if self.i == 0:
