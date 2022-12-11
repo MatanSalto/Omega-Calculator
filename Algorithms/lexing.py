@@ -1,6 +1,6 @@
-from tokens import *
-from Exceptions.exceptions import *
 from Config.constants import OPERATORS
+from Exceptions.exceptions import *
+from tokens import *
 
 
 class TokenStream:
