@@ -1,6 +1,5 @@
 from tokens import *
 
-
 # Valid operators
 OPERATORS = {
     '+':Plus,
