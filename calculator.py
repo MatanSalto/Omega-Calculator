@@ -1,7 +1,7 @@
+from IO.input import ConsoleReader, InputReader
+from IO.output import ConsoleOutputPrinter, OutputPrinter
 from lexer import Lexer
 from parsing import Parser, RecursiveDescentParser
-from IO.input import InputReader, ConsoleReader
-from IO.output import OutputPrinter, ConsoleOutputPrinter
 
 
 class Calculator:
