@@ -36,7 +36,7 @@ def parse_binary_expression(tokens: TokenStream, priority:int, string:str, in_pa
     
     # Base case: if we reached the max priority, try parsing the rest of the expression as a factorial expression
     if priority > MAX_PRIORITY:
-        return parse_factorial_digitsSum_expression(tokens, string, in_paren)
+        return parse_first_negative_expression(tokens, string, in_paren)
 
     else:
         # Get the valid operators for the current priority
@@ -81,6 +81,30 @@ def parse_binary_expression(tokens: TokenStream, priority:int, string:str, in_pa
                 
                 # Else, return the node itself
                 return a
+
+
+def parse_first_negative_expression(tokens:TokenStream, string:str, in_paren:False):
+    # If the next two tokens are minus
+    if tokens.has_next() and type(tokens.peek()) == Minus and tokens.has_double_next() and type(tokens.look_ahead()) == Minus:
+        # Get the minus operator node
+        c = tokens.next()
+
+        # Parse the right side of the expression
+        a = parse_first_negative_expression(tokens, string, in_paren)
+
+        if not a:
+            raise MissingOperandException(c.index, string)
+        # Set the right side as the negative node child and return it
+        return Negative(c.index, '-', a)
+    
+    # Else, there is no minus operator in the expression
+    else:
+        # If the expression is not in parenthesis and we encountered a ')', raise an exception
+        if not in_paren and type(tokens.peek()) == CloseParen:
+            raise MissingParenthesisException()
+
+        # Else try parsing the rest of the expression
+        return parse_factorial_digitsSum_expression(tokens, string, in_paren)
 
 
 def parse_factorial_digitsSum_expression(tokens: TokenStream, string:str, in_paren=False) -> Token:
@@ -162,11 +186,11 @@ def parse_tilda_expression(tokens: TokenStream, string:str, in_paren=False) -> T
             raise MissingParenthesisException()
 
         # Else try parsing the rest of the expression
-        return parse_negative_expression(tokens, string, in_paren)
+        return parse_second_negative_expression(tokens, string, in_paren)
 
 
 
-def parse_negative_expression(tokens: TokenStream, string:str, in_paren=False):
+def parse_second_negative_expression(tokens: TokenStream, string:str, in_paren=False):
     """
     This function parses a negative expression
     Args:
