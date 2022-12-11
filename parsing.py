@@ -1,5 +1,5 @@
+from Algorithms.lexing import Token, TokenStream
 from Algorithms.recursive_descent import parse_expression
-from Algorithms.lexing import TokenStream, Token
 
 
 class Parser:

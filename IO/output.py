@@ -1,5 +1,6 @@
 from Exceptions.exceptions import ParsingInterrupt
 
+
 class OutputPrinter:
     def __init__(self) -> None:
         pass

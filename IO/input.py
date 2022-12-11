@@ -1,5 +1,6 @@
 from Exceptions.exceptions import EmptyInputString, ParsingInterrupt
 
+
 class InputReader:
 
     def __init__(self) -> None:
