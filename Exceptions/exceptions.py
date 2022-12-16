@@ -41,7 +41,6 @@ class InvalidOperandException(Exception):
         super().__init__(message)
 
 
-
 # Other excpetions
 
 # This exception is raised when there is some keyboard interrupt during the parsing of the expression
