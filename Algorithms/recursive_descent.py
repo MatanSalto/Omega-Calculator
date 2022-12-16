@@ -45,7 +45,7 @@ def parse_binary_expression(tokens: TokenStream, priority:int, string:str, in_pa
         # Parse the left hand side of the expression
         a = parse_binary_expression(tokens, priority+1, string, in_paren)
 
-        # If a is null, raise an exception
+        # If a is null, raise an exception (there is a missing operand)
         if not a:
             raise MissingOperandException(tokens.last_token().index, string)
 
@@ -58,7 +58,7 @@ def parse_binary_expression(tokens: TokenStream, priority:int, string:str, in_pa
                 # Parse the right hand side of the expression
                 b = parse_binary_expression(tokens, priority+1, string, in_paren)
 
-                # If the right hand side, is null, raise an exception
+                # If the right hand side, is None, raise an exception
                 if not b:
                     raise MissingOperandException(c.index, string)
 
@@ -71,11 +71,11 @@ def parse_binary_expression(tokens: TokenStream, priority:int, string:str, in_pa
 
             # Else, there is no more valid operators at the current priority
             else:
-                # If the next token is a number, a '(' or a '~', raise an exception
+                # If the next token is a number, a '(' or a '~', raise an exception (there is a missing operator)
                 if type(tokens.peek()) == Number or type(tokens.peek()) == OpenParen or type(tokens.peek()) == Tilda:
                     raise MissingOperatorException(tokens.peek().index, string)
 
-                # If the expression is not in parenthesis and we encountered a ')', raise an exception
+                # If the expression is not in parenthesis and we encountered a ')', raise an exception (missing parenthesis)
                 if not in_paren and type(tokens.peek()) == CloseParen:
                     raise MissingParenthesisException()
                 
@@ -84,22 +84,34 @@ def parse_binary_expression(tokens: TokenStream, priority:int, string:str, in_pa
 
 
 def parse_first_negative_expression(tokens:TokenStream, string:str, in_paren:False):
-    # If the next two tokens are minus
-    if tokens.has_next() and type(tokens.peek()) == Minus and tokens.has_double_next() and type(tokens.look_ahead()) == Minus:
+    """
+    This function parses a negative expression
+    Args:
+        tokens (TokenStream): the sequence of tokens
+        string (str): the original input sting (to report errors)
+        in_paren (bool, optional): is the current expression is in parenthasis. Defaults to False.
+
+    Returns:
+        Token: a token node representing the expression
+    """
+    # If the next token is a minus, and the one after that is a minus or a tilda
+    if tokens.has_next() and type(tokens.peek()) == Minus and tokens.has_double_next() and (type(tokens.look_ahead()) == Minus or type(tokens.look_ahead()) == Tilda):
         # Get the minus operator node
         c = tokens.next()
 
         # Parse the right side of the expression
         a = parse_first_negative_expression(tokens, string, in_paren)
 
+        # If a is None, raise an exception (there is a missing operand)
         if not a:
             raise MissingOperandException(c.index, string)
+
         # Set the right side as the negative node child and return it
         return Negative(c.index, '-', a)
     
     # Else, there is no minus operator in the expression
     else:
-        # If the expression is not in parenthesis and we encountered a ')', raise an exception
+        # If the expression is not in parenthesis and we encountered a ')', raise an exception (missing parenthesis)
         if not in_paren and type(tokens.peek()) == CloseParen:
             raise MissingParenthesisException()
 
@@ -176,44 +188,11 @@ def parse_tilda_expression(tokens: TokenStream, string:str, in_paren=False) -> T
             raise MissingOperandException(c.index, string)
         # Set the right side as the tilda node child
         c.operand = a
+
         # Return the tilda node
         return c
     
     # Else, there is no tilda operator in the expression
-    else:
-        # If the expression is not in parenthesis and we encountered a ')', raise an exception
-        if not in_paren and type(tokens.peek()) == CloseParen:
-            raise MissingParenthesisException()
-
-        # Else try parsing the rest of the expression
-        return parse_second_negative_expression(tokens, string, in_paren)
-
-
-
-def parse_second_negative_expression(tokens: TokenStream, string:str, in_paren=False):
-    """
-    This function parses a negative expression
-    Args:
-        tokens (TokenStream): the sequence of tokens
-        string (str): the original input sting (to report errors)
-        in_paren (bool, optional): is the current expression is in parenthasis. Defaults to False.
-
-    Returns:
-        Token: a token node representing the expression
-    """
-    # If the next token in a minus
-    if tokens.has_next() and type(tokens.peek()) == Minus:
-        # Pop the next token
-        c = tokens.next()
-        # Parse the rest of the expression
-        a = parse_tilda_expression(tokens, string, in_paren)
-
-        if not a:
-            raise MissingOperandException(c.index, string)
-        
-        # Return the negative node  
-        return Negative(c.index, '-', a)
-
     else:
         # If the expression is not in parenthesis and we encountered a ')', raise an exception
         if not in_paren and type(tokens.peek()) == CloseParen:
