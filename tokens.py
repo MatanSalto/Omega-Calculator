@@ -189,7 +189,11 @@ class Power(BinaryOperator):
 
         # Validate the operands
         if self.validate_operands():
-            return self.left_value ** self.right_value
+            value = self.left_value ** self.right_value
+
+        # If the value is a complex number, raise an exception
+        if type(value) == complex:
+            raise InvalidOperandException("Invalid operand for power expression. The result of the power expression is a complex number")
 
     def validate_operands(self) -> bool:
         # If the expression is 0^0, raise an exception
