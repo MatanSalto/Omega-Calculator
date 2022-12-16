@@ -18,9 +18,7 @@ class ConsoleReader(InputReader):
         # Try to input the string from the user
         try:
             string = input(message)
-            # If the string is None, raise an exception
-            if not string:
-                raise EmptyInputString()
+            
         # Catch keyboard interrupt
         except KeyboardInterrupt as kbi:
             print(kbi.__cause__)
