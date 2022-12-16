@@ -134,6 +134,7 @@ def parse_factorial_digitsSum_expression(tokens: TokenStream, string:str, in_par
     # Parse the left side of the expression
     a = parse_tilda_expression(tokens, string, in_paren)
 
+    # If a is None, raise an exception (there is a missing operand)
     if not a:
         raise MissingOperandException(tokens.last_token().index, string)
 
@@ -146,6 +147,7 @@ def parse_factorial_digitsSum_expression(tokens: TokenStream, string:str, in_par
             c.operand = a
             # Set a to be the factorial node
             a = c
+
         # If the next token is a factorial
         if tokens.has_next() and type(tokens.peek()) == Factorial:
             # Get the factorial operator node
@@ -157,7 +159,7 @@ def parse_factorial_digitsSum_expression(tokens: TokenStream, string:str, in_par
         
         # Else, there is no more factorial or sumDigits operators in the expression
         else:
-            # If the expression is not in parenthesis and we encountered a ')', raise an exception
+            # If the expression is not in parenthesis and we encountered a ')', raise an exception (missing parenthesis)
             if not in_paren and type(tokens.peek()) == CloseParen:
                     raise MissingParenthesisException()
 
@@ -184,8 +186,10 @@ def parse_tilda_expression(tokens: TokenStream, string:str, in_paren=False) -> T
         # Parse the right side of the expression
         a = parse_tilda_expression(tokens, string, in_paren)
 
+        # If a is None, raise an exception (there is a missing operand)
         if not a:
             raise MissingOperandException(c.index, string)
+
         # Set the right side as the tilda node child
         c.operand = a
 
@@ -194,7 +198,7 @@ def parse_tilda_expression(tokens: TokenStream, string:str, in_paren=False) -> T
     
     # Else, there is no tilda operator in the expression
     else:
-        # If the expression is not in parenthesis and we encountered a ')', raise an exception
+        # If the expression is not in parenthesis and we encountered a ')', raise an exception (missing parenthesis)
         if not in_paren and type(tokens.peek()) == CloseParen:
             raise MissingParenthesisException()
 
@@ -225,6 +229,11 @@ def parse_final_expression(tokens: TokenStream, string:str) -> Token:
         c = tokens.next()
         # Parse the left side of the expression
         a = parse_final_expression(tokens, string)
+
+        # If a is None, raise an exception (there is a missing operand)
+        if not a:
+            raise MissingOperandException(c.index, string) 
+
         # Return a negative node with the left side as its child
         return Negative(c.index, '-', a)
     
