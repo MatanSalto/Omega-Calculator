@@ -3,19 +3,24 @@ class InvalidSymbolException(Exception):
         super().__init__(f"\nInvalid character at index {index}\n" + input_string + '\n' + ' '*index + '↑')
 
 
-class MissingParenthesisException(Exception):
+class SyntaxException(Exception):
+    def __init__(self, message: int) -> None:
+        super().__init__(message)
+
+class MissingParenthesisException(SyntaxException):
     def __init__(self) -> None:
         super().__init__(f"\nCannot evaluate the expression. Missing parenthesis\n")
 
 
-class MissingOperandException(Exception):
+class MissingOperandException(SyntaxException):
     def __init__(self, index:int, input_string) -> None:
         super().__init__(f"\nMissing operand at index {index}\n" + input_string + '\n' + ' '*index + '↑')
 
 
-class MissingOperatorException(Exception):
+class MissingOperatorException(SyntaxException):
     def __init__(self, index:int, input_string:str) -> None:
         super().__init__(f"\nMissing operator at index {index}\n" + input_string + '\n' + ' '*index + '↑')
+
 
 
 class InvalidOperandException(Exception):
