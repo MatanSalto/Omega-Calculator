@@ -116,7 +116,7 @@ def lex_input_string(string) -> TokenStream:
             # Append the digit to the number until the character is not a digit
             while string[index].isdigit() or string[index].isspace():
                 # Ignore whitespaces
-                if string[index] == ' ':
+                if string[index].isspace():
                     index += 1
                     continue
 
