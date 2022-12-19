@@ -14,6 +14,7 @@ class Token:
     def evaluate(self) -> float:
         pass
 
+
 class Number(Token):
     def __init__(self, index:int, value:float) -> None:
         super().__init__(index, "Number", value)
@@ -63,7 +64,10 @@ class Factorial(UnaryOperator):
 
         # Validate the operands
         if self.validate_operands():
-            return self._factorial(self.value)
+            try:
+                return self._factorial(self.value)
+            except RecursionError:
+                raise InvalidOperandException("Invalid operand for the factorial operator. The operand is too large")
 
     def _factorial(self, n:int) -> int:
         if n == 0: return 1
@@ -195,10 +199,15 @@ class Power(BinaryOperator):
         if type(value) == complex:
             raise InvalidOperandException("Invalid operand for power expression. The result of the power expression is a complex number")
 
+        return value
+
     def validate_operands(self) -> bool:
         # If the expression is 0^0, raise an exception
         if self.left_value == 0 and self.right_value == 0:
             raise InvalidOperandException("Invalid operand for power expression. Cannot evaluate 0^0")
+
+        if self.right_value >= 1000:
+            raise InvalidOperandException("Invalid operands for power expression. The operands are too large")
         
         # Else, return True
         return True
