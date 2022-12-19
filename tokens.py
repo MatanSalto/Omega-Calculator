@@ -131,7 +131,7 @@ class SumDigits(UnaryOperator):
     def _count_digits(self, num):
         sum = 0
         for digit in str(num):
-            if digit != '.' and digit != '-':
+            if digit.isdigit():
                 sum += int(digit)
 
         return sum if num > 0 else -sum
